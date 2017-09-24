@@ -6,6 +6,7 @@ package main
 import (
 	"os"
 	"time"
+	"strconv"
 
 	"github.com/openfaas/faas-netes/handlers"
 	"github.com/openfaas/faas-provider"
@@ -13,6 +14,24 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 )
+
+func parseBoolValue(val string) bool {
+	if val == "true" {
+		return true
+	}
+	return false
+}
+
+func parseIntValue(val string, fallback int) int {
+	if len(val) > 0 {
+		parsedVal, parseErr := strconv.Atoi(val)
+		if parseErr == nil && parsedVal >= 0 {
+			return parsedVal
+		}
+	}
+	return fallback
+}
+
 
 func main() {
 	// creates the in-cluster config
@@ -42,11 +61,15 @@ func main() {
 		UpdateHandler:  handlers.MakeUpdateHandler(functionNamespace, clientset),
 	}
 
+	// Q: should this key be different from key for gateway/types/readconfig.go
+	readTimeout := parseIntValue(os.Getenv("read_timeout"), 8)
+	writeTimeout := parseIntValue(os.Getenv("write_timeout"), 8)
+
 	var port int
 	port = 8080
 	bootstrapConfig := bootTypes.FaaSConfig{
-		ReadTimeout:  time.Second * 8,
-		WriteTimeout: time.Second * 8,
+		ReadTimeout:  time.Duration(readTimeout) * time.Second,
+		WriteTimeout: time.Duration(writeTimeout) * time.Second,
 		TCPPort:      &port,
 	}
 
