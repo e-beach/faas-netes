@@ -5,8 +5,6 @@ package main
 
 import (
 	"os"
-	"time"
-	"strconv"
 
 	"github.com/openfaas/faas-netes/handlers"
 	"github.com/openfaas/faas-provider"
@@ -14,17 +12,6 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 )
-
-func parseIntValue(val string, fallback int) int {
-	if len(val) > 0 {
-		parsedVal, parseErr := strconv.Atoi(val)
-		if parseErr == nil && parsedVal >= 0 {
-			return parsedVal
-		}
-	}
-	return fallback
-}
-
 
 func main() {
 	// creates the in-cluster config
@@ -54,14 +41,15 @@ func main() {
 		UpdateHandler:  handlers.MakeUpdateHandler(functionNamespace, clientset),
 	}
 
-	readTimeout := parseIntValue(os.Getenv("read_timeout"), 8)
-	writeTimeout := parseIntValue(os.Getenv("write_timeout"), 8)
+	readConfig := ReadConfig{}
+	osEnv := OsEnv{}
+	cfg := readConfig.Read(osEnv)
 
 	var port int
 	port = 8080
 	bootstrapConfig := bootTypes.FaaSConfig{
-		ReadTimeout:  time.Duration(readTimeout) * time.Second,
-		WriteTimeout: time.Duration(writeTimeout) * time.Second,
+		ReadTimeout:  cfg.ReadTimeout,
+		WriteTimeout: cfg.WriteTimeout,
 		TCPPort:      &port,
 	}
 
