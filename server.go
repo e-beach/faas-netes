@@ -15,13 +15,6 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-func parseBoolValue(val string) bool {
-	if val == "true" {
-		return true
-	}
-	return false
-}
-
 func parseIntValue(val string, fallback int) int {
 	if len(val) > 0 {
 		parsedVal, parseErr := strconv.Atoi(val)
@@ -61,7 +54,6 @@ func main() {
 		UpdateHandler:  handlers.MakeUpdateHandler(functionNamespace, clientset),
 	}
 
-	// Q: should this key be different from key for gateway/types/readconfig.go
 	readTimeout := parseIntValue(os.Getenv("read_timeout"), 8)
 	writeTimeout := parseIntValue(os.Getenv("write_timeout"), 8)
 
