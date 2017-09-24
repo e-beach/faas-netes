@@ -7,6 +7,7 @@ WORKDIR /go/src/github.com/openfaas/faas-netes
 COPY vendor     vendor
 COPY handlers	handlers
 COPY types      types
+COPY read_config.go .
 COPY server.go  .
 
 RUN gofmt -l -d $(find . -type f -name '*.go' -not -path "./vendor/*") \
