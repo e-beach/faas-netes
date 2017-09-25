@@ -7,8 +7,10 @@ import (
 	"os"
 
 	"github.com/openfaas/faas-netes/handlers"
+	"github.com/openfaas/faas-netes/types"
 	"github.com/openfaas/faas-provider"
 	bootTypes "github.com/openfaas/faas-provider/types"
+
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 )
@@ -41,8 +43,8 @@ func main() {
 		UpdateHandler:  handlers.MakeUpdateHandler(functionNamespace, clientset),
 	}
 
-	readConfig := ReadConfig{}
-	osEnv := OsEnv{}
+	readConfig := types.ReadConfig{}
+	osEnv := types.OsEnv{}
 	cfg := readConfig.Read(osEnv)
 
 	var port int
