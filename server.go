@@ -4,6 +4,7 @@
 package main
 
 import (
+	"log"
 	"os"
 
 	"github.com/openfaas/faas-netes/handlers"
@@ -16,6 +17,7 @@ import (
 )
 
 func main() {
+
 	// creates the in-cluster config
 	config, err := rest.InClusterConfig()
 	if err != nil {
@@ -46,6 +48,9 @@ func main() {
 	readConfig := types.ReadConfig{}
 	osEnv := types.OsEnv{}
 	cfg := readConfig.Read(osEnv)
+
+	log.Printf("HTTP Read Timeout: %s", cfg.ReadTimeout)
+	log.Printf("HTTP Write Timeout: %s", cfg.WriteTimeout)
 
 	var port int
 	port = 8080
